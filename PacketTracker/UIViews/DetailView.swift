@@ -77,7 +77,7 @@ struct DetailView : View {
                 }
             }
         }
-        .navigationBarTitle("CLOTHES", displayMode: .inline).foregroundColor(.red)
+        .navigationBarTitle("\(self.order.title ?? "Unknown")", displayMode: .inline).foregroundColor(.red)
         .onAppear {
             self.getTrackingDetail()
         }

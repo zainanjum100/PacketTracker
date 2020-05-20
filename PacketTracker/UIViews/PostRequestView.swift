@@ -23,6 +23,7 @@ struct PostRequestView: View {
         Form {
             Section(header: Text("Enter tracking number")){
                 TextField("123456789", text: self.$trackingNumber, onEditingChanged: { (success) in
+                    self.carriers = [CarrierCode]()
                 }) {
                     self.isTrackingEntered = true
                     print("finished")
@@ -39,7 +40,12 @@ struct PostRequestView: View {
             }
             Section {
                 Button(action: {
-                    self.postRequest()
+                    if self.carriers.count == 0{
+                        self.title = "Plase select a carrier first."
+                        self.isShowingAlert.toggle()
+                    }else{
+                        self.postRequest()
+                    }
                 }) {
                     Text("Submit Request")
                         .foregroundColor(Color.red)
@@ -59,7 +65,12 @@ struct PostRequestView: View {
             if let data = data{
                 do {
                     let JSON = try JSONDecoder().decode(DetectData.self, from: data)
-                    self.carriers = JSON.data
+                    if JSON.meta.code == 200{
+                        self.carriers = JSON.data
+                    }else{
+                        self.title = JSON.meta.message
+                        self.isShowingAlert.toggle()
+                    }
                 } catch let err {
                     print(err)
                 }
@@ -77,6 +88,8 @@ struct PostRequestView: View {
                         if let order = JSON.data{
                             switch order {
                             case .array:
+                                self.title = JSON.meta.message
+                                self.isShowingAlert.toggle()
                                 break
                             case .single(let order):
                                 self.apiService.orders.append(order)

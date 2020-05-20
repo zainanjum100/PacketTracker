@@ -10,6 +10,7 @@ import Foundation
 
 struct DetectData: Codable {
     let data: [CarrierCode]
+    let meta: MetaData
 }
 struct CarrierCode: Codable {
     let name: String
@@ -55,6 +56,7 @@ enum SingleOrArray: Codable {
 
 struct Order: Codable {
     let status,carrier_code,tracking_number,id : String
+    let title: String?
 }
 struct AllOrderDetail: Codable {
     let data: OrderDetail

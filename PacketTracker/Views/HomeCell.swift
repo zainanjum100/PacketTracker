@@ -13,7 +13,7 @@ struct HomeCell: View {
     var order: Order!
     var body: some View {
         return VStack(alignment: .leading, content: {
-            Text(self.order.id)
+            Text(self.order.title ?? "Unknown")
                 .foregroundColor(Color.red)
                 .lineLimit(nil)
                 .font(.custom("D-DIN-Bold", size: 18))
