@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct PostRequestView: View {
-//    @State private var carriers = [CarrierCode(name: "Select carrier", code: "")]
+    //    @State private var carriers = [CarrierCode(name: "Select carrier", code: "")]
     @State private var carriers = [CarrierCode]()
     @State private var trackingNumber = ""
     @State private var title = ""
@@ -30,34 +30,57 @@ struct PostRequestView: View {
                     self.getCarriersFromBE()
                 }
             }
-            Section {
-                Picker(selection: $selectedIndex, label: Text("Select carrier")) {
-                    ForEach(0 ..< carriers.count, id: \.self) {
-                        Text(self.carriers[$0].name)
+            if carriers.count == 0{
+                Section {
+                    Button(action: {
+                        if self.trackingNumber.count == 0{
+                            self.title = "Please write tracking number first"
+                            self.isShowingAlert.toggle()
+                            UIApplication.shared.endEditing()
+                        }else{
+                            UIApplication.shared.endEditing()
+                            self.getCarriersFromBE()
+                        }
+                    }) {
+                        Text("Get Carrier List")
+                            .foregroundColor(Color.red)
+                            .font(.custom("D-DIN", size: 16))
                     }
-                }.disabled(carriers.count == 0)
-                
-            }
-            Section {
-                Button(action: {
-                    if self.carriers.count == 0{
-                        self.title = "Plase select a carrier first."
-                        self.isShowingAlert.toggle()
-                    }else{
-                        self.postRequest()
-                    }
-                }) {
-                    Text("Submit Request")
-                        .foregroundColor(Color.red)
-                        .font(.custom("D-DIN", size: 16))
+                    
                 }
-                
+            }
+            if carriers.count != 0{
+                Section {
+                    Picker(selection: $selectedIndex, label: Text("Select carrier")) {
+                        ForEach(0 ..< carriers.count, id: \.self) {
+                            Text(self.carriers[$0].name)
+                        }
+                    }
+                    
+                }
+            }
+            if carriers.count != 0{
+                Section {
+                    Button(action: {
+                        if self.carriers.count == 0{
+                            self.title = "Plase select a carrier first."
+                            self.isShowingAlert.toggle()
+                        }else{
+                            self.postRequest()
+                        }
+                    }) {
+                        Text("Submit Request")
+                            .foregroundColor(Color.red)
+                            .font(.custom("D-DIN", size: 16))
+                    }
+                    
+                }
             }
         }.navigationBarTitle("Post Request")
             .padding(.top)
-        .alert(isPresented: self.$isShowingAlert) {
-                         Alert(title: Text(self.title), message: nil, dismissButton: .default(Text("OK")))
-                 }
+            .alert(isPresented: self.$isShowingAlert) {
+                Alert(title: Text(self.title), message: nil, dismissButton: .default(Text("OK")))
+        }
     }
     func getCarriersFromBE() {
         let params = ["tracking_number": trackingNumber] as [String: Any]
@@ -108,10 +131,8 @@ struct PostRequestView: View {
         }
     }
 }
-//#if DEBUG
-//struct PostRequestView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        PostRequestView()
-//    }
-//}
-//#endif
+extension UIApplication {
+    func endEditing() {
+        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
